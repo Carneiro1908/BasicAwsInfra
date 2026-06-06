@@ -11,6 +11,24 @@ on:
         options:
           - Yes
           - No
+      
+      destroy:
+        description: 'Execute terraform destroy?'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - Yes
+          - No
+
+      plan_destroy:
+        description: 'Plan terraform destroy?'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - Yes
+          - No
 
 permissions:
   id-token: write
@@ -51,3 +69,12 @@ jobs:
       - name: Terraform Apply  
         run: terraform apply -auto-approve tfplan
         if: github.event.inputs.apply == 'true'
+    
+      # Using Terraform destroy to destroy all infra created
+      - name: Terraform Plan Destroy  
+        run: terraform plan --destroy -out tfplan
+        if: github.event.inputs.plan_destroy == 'true'
+
+      - name: Terraform Destroy  
+        run: terraform apply --destroy -auto-approve tfplan
+        if: github.event.inputs.destroy == 'true'
